@@ -1,5 +1,8 @@
 # local-vue3
 
+$ git config user.name "rimo32d"
+$ git config user.email "nv0f32d@gmail.com"
+
 ## Project setup
 ```
 npm install
