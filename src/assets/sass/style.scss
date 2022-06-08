@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+// component
+@use './component/c-button';
+// foundation
+@use './foundation/reset';
+
+// layout
+@use './layout/l-main';
