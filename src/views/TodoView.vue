@@ -13,6 +13,7 @@
         <input type="checkbox" v-model="todo.isDone" />
         <span v-bind:class="{ done: todo.isDone }">{{ todo.item }}</span>
         <TheButton @onClick="editText(index)" text="編集" />
+        <input type="text" v-if="todo.isOpen" v-model="todo.item" />
         <TheButton @onClick="deleteButton(index)" text="削除" />
       </li>
     </ul>
@@ -29,6 +30,7 @@
     let todo = {
       item: todoText.value,
       isDone: false,
+      isOpen: false
     };
     todoList.value.push(todo);
     todoText.value = "";
@@ -37,6 +39,11 @@
     todoList.value.splice(index, 1);
   };
   let editText = (index) => {
-    console.log(index)
+    let editFrag =  todoList.value[index].isOpen
+    if (editFrag) {
+      todoList.value[index].isOpen = false
+    } else {
+      todoList.value[index].isOpen = true
+    }
   }
 </script>
