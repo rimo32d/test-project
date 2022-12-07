@@ -1,0 +1,10 @@
+.c-list {
+  background-color: #E5E7EB;
+  margin: 0 15px;
+  padding: 10px;
+  border-radius: 10px;
+  &--title {
+    font-weight: bold;
+    padding: 10px 5px;
+  }
+}

@@ -1,0 +1,20 @@
+.c-card {
+  background-color: #FFF;
+  border-radius: 5px;
+  padding: 10px;
+  &--inner {}
+  &--title {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 0;
+  }
+  &--desc {
+    font-size: 14px;
+    padding: 5px 0;
+  }
+  &--user {
+    font-size: 14px;
+    padding: 5px 0;
+    text-align: end;
+  }
+}

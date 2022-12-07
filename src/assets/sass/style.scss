@@ -2,6 +2,8 @@
 
 // component
 @use './component/c-button';
+@use './component/c-todo_list';
+@use './component/c-todo_card';
 // foundation
 @use './foundation/reset';
 
