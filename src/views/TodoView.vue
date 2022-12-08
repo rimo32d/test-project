@@ -35,7 +35,8 @@
           v-for="(card, index) in list.cards"
           :key="index"
           class="c-card"
-          @mousedown="mousedown()"
+          @mousedown="mousedown"
+          draggable="true"
         >
           <div class="c-card--inner">
             <div class="c-card--title">
@@ -118,13 +119,21 @@ let lists = ref([
     ],
   },
 ]);
-let mousedown = () => {
-  console.log('click mousedown')
+let element = ref('')
+let dragging = ref(false)
+let mousedown = (e) => {
+  dragging.value = true;
+  element.value = e.target;
+  e.target.style.position = "absolute"
 }
-let mouseMove = () => {
-  console.log('click mousemove')
+let mouseMove = (e) => {
+  if(dragging.value){
+    element.value.style.top = `${e.pageY}px`
+    element.value.style.left = `${e.pageX}px`
+  }
 }
 let mouseUp = () => {
+  dragging.value = false
   console.log('click mouseUp')
 }
 onMounted( () => {

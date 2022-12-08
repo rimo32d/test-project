@@ -1,8 +1,11 @@
 .c-card {
+  min-width: 230px;
   background-color: #FFF;
   border-radius: 5px;
   padding: 10px;
-  &--inner {}
+  &--inner {
+    pointer-events: none;
+  }
   &--title {
     font-size: 14px;
     font-weight: bold;
