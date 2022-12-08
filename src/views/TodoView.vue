@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref,onMounted } from "vue";
 import TheButton from "../components/TheButton.vue";
 const todoList = ref([]);
 const todoText = ref("");
@@ -121,4 +121,14 @@ let lists = ref([
 let mousedown = () => {
   console.log('click mousedown')
 }
+let mouseMove = () => {
+  console.log('click mousemove')
+}
+let mouseUp = () => {
+  console.log('click mouseUp')
+}
+onMounted( () => {
+  window.addEventListener('mousemove', mouseMove);
+  window.addEventListener('mouseup', mouseUp);
+})
 </script>
