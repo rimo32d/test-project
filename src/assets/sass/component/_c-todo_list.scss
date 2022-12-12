@@ -3,6 +3,8 @@
   margin: 0 15px;
   padding: 10px;
   border-radius: 10px;
+  user-select: none;
+  min-width: 260px;
   &--title {
     font-weight: bold;
     padding: 10px 5px;

@@ -21,33 +21,26 @@
       </li>
     </ul>
   </div>
-  <div id="trello" class="l-flex" style="align-items: flex-start;">
-    <div
-      v-for="(list, index) in lists"
-      :key="index"
-      style="min-width: 260px"
-      class="c-list"
-    >
+  <div id="trello" class="l-flex" style="align-items: flex-start">
+    <div v-for="(list, index) in lists" :key="index" class="c-list">
       <div class="c-list--title">{{ list.name }}</div>
       <!-- 分類表示 -->
-      <div>
-        <div
-          v-for="(card, index) in list.cards"
-          :key="index"
-          class="c-card"
-          @mousedown="mousedown"
-          draggable="true"
-        >
-          <div class="c-card--inner">
-            <div class="c-card--title">
-              {{ card.name }}
-            </div>
-            <div class="c-card--desc" v-show="card.description">
-              {{ card.description }}
-            </div>
-            <div class="c-card--user">
-              {{ card.user_name }}
-            </div>
+      <div
+        v-for="(card, index) in list.cards"
+        :key="index"
+        class="c-card"
+        @mousedown="mousedown"
+        draggable="true"
+      >
+        <div class="c-card--inner">
+          <div class="c-card--title">
+            {{ card.name }}
+          </div>
+          <div class="c-card--desc" v-show="card.description">
+            {{ card.description }}
+          </div>
+          <div class="c-card--user">
+            {{ card.user_name }}
           </div>
         </div>
       </div>
@@ -56,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import TheButton from "../components/TheButton.vue";
 const todoList = ref([]);
 const todoText = ref("");
@@ -91,7 +84,7 @@ let lists = ref([
         name: "レポートの作成",
         description: "コロナに影響による飲食店の倒産件数の調査",
         user_name: "鈴木",
-      }
+      },
     ],
   },
   {
@@ -119,25 +112,39 @@ let lists = ref([
     ],
   },
 ]);
-let element = ref('')
-let dragging = ref(false)
+let element = ref("");
+let dragging = ref(false);
+let pageX = ref(0);
+let pageY = ref(0);
+let cardTop = ref(0);
+let cardLeft = ref(0);
+
 let mousedown = (e) => {
+  // クリック時
   dragging.value = true;
   element.value = e.target;
-  e.target.style.position = "absolute"
-}
+  pageX.value = e.pageX;
+  pageY.value = e.pageY;
+  cardTop.value = element.value.getBoundingClientRect().top;
+  cardLeft.value = element.value.getBoundingClientRect().left;
+  e.target.style.position = "absolute";
+};
 let mouseMove = (e) => {
-  if(dragging.value){
-    element.value.style.top = `${e.pageY}px`
-    element.value.style.left = `${e.pageX}px`
+  // マウス移動時
+  if (dragging.value) {
+    let moveX = e.pageX - pageX.value + cardLeft.value;
+    let moveY = e.pageY - pageY.value + cardTop.value;
+    element.value.style.top = moveY + "px";
+    element.value.style.left = moveX + "px";
   }
-}
+};
 let mouseUp = () => {
-  dragging.value = false
-  console.log('click mouseUp')
-}
-onMounted( () => {
-  window.addEventListener('mousemove', mouseMove);
-  window.addEventListener('mouseup', mouseUp);
-})
+  // マウスを離した時
+  dragging.value = false;
+  console.log("click mouseUp");
+};
+onMounted(() => {
+  window.addEventListener("mousemove", mouseMove);
+  window.addEventListener("mouseup", mouseUp);
+});
 </script>
