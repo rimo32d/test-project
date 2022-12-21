@@ -1,5 +1,5 @@
 .c-card {
-  max-width: 240px;
+  width: 240px;
   background-color: #FFF;
   border-radius: 5px;
   padding: 10px;
@@ -19,5 +19,11 @@
     font-size: 14px;
     padding: 5px 0;
     text-align: end;
+  }
+  &--placeHolder {
+    min-width: 240px;
+    min-height: 10px;
+    margin-bottom: 5px;
+    background-color: #AEAFAE;
   }
 }

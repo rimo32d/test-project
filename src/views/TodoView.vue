@@ -24,13 +24,12 @@
   <div id="trello" class="l-flex" style="align-items: flex-start">
     <div v-for="(list, index) in lists" :key="index" class="c-list">
       <div class="c-list--title">{{ list.name }}</div>
-      <!-- 分類表示 -->
       <div
         v-for="(card, index) in list.cards"
         :key="index"
         class="c-card"
         @mousedown="mousedown"
-        draggable="true"
+        v-bind:draggable="false"
       >
         <div class="c-card--inner">
           <div class="c-card--title">
@@ -118,6 +117,8 @@ let pageX = ref(0);
 let pageY = ref(0);
 let cardTop = ref(0);
 let cardLeft = ref(0);
+let placeHolder = ref("");
+let firstDrag = ref(true);
 
 let mousedown = (e) => {
   // クリック時
@@ -136,6 +137,12 @@ let mouseMove = (e) => {
     let moveY = e.pageY - pageY.value + cardTop.value;
     element.value.style.top = moveY + "px";
     element.value.style.left = moveX + "px";
+    if (firstDrag.value ) {
+      placeHolder.value = document.createElement("div");
+      placeHolder.value.classList.add("c-card--placeHolder");
+      element.value.parentNode.insertBefore(placeHolder.value,element.value.nextSibling);
+      firstDrag.value = false
+    }
   }
 };
 let mouseUp = () => {
@@ -143,6 +150,7 @@ let mouseUp = () => {
   dragging.value = false;
   console.log("click mouseUp");
 };
+
 onMounted(() => {
   window.addEventListener("mousemove", mouseMove);
   window.addEventListener("mouseup", mouseUp);
