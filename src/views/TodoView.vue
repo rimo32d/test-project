@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <!-- <div id="app">
     <h2>ToDoリスト</h2>
     <form @submit.prevent>
       <div class="l-flex">
@@ -20,7 +20,7 @@
         <TheButton @onClick="deleteButton(index)" text="削除" />
       </li>
     </ul>
-  </div>
+  </div> -->
   <div id="trello" class="l-flex" style="align-items: flex-start">
     <div v-for="(list, index) in lists" :key="index" class="c-list">
       <div class="c-list--title">{{ list.name }}</div>
@@ -44,35 +44,36 @@
         </div>
       </div>
     </div>
+    <div ref="drag"></div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import TheButton from "../components/TheButton.vue";
-const todoList = ref([]);
-const todoText = ref("");
-const addItem = () => {
-  if (todoText.value === "") return;
-  let todo = {
-    item: todoText.value,
-    isDone: false,
-    isOpen: false,
-  };
-  todoList.value.push(todo);
-  todoText.value = "";
-};
-let deleteButton = (index) => {
-  todoList.value.splice(index, 1);
-};
-let editText = (index) => {
-  let editFrag = todoList.value[index].isOpen;
-  if (editFrag) {
-    todoList.value[index].isOpen = false;
-  } else {
-    todoList.value[index].isOpen = true;
-  }
-};
+// import TheButton from "../components/TheButton.vue";
+// const todoList = ref([]);
+// const todoText = ref("");
+// const addItem = () => {
+//   if (todoText.value === "") return;
+//   let todo = {
+//     item: todoText.value,
+//     isDone: false,
+//     isOpen: false,
+//   };
+//   todoList.value.push(todo);
+//   todoText.value = "";
+// };
+// let deleteButton = (index) => {
+//   todoList.value.splice(index, 1);
+// };
+// let editText = (index) => {
+//   let editFrag = todoList.value[index].isOpen;
+//   if (editFrag) {
+//     todoList.value[index].isOpen = false;
+//   } else {
+//     todoList.value[index].isOpen = true;
+//   }
+// };
 let lists = ref([
   {
     id: 1,
@@ -111,13 +112,20 @@ let lists = ref([
     ],
   },
 ]);
+
 let element = ref("");
 let dragging = ref(false);
+
 let pageX = ref(0);
 let pageY = ref(0);
 let cardTop = ref(0);
 let cardLeft = ref(0);
+let cardHeight = ref(0);
+
 let placeHolder = ref("");
+let dragElement = ref("");
+let drag = ref("");
+
 let firstDrag = ref(true);
 
 let mousedown = (e) => {
@@ -128,25 +136,38 @@ let mousedown = (e) => {
   pageY.value = e.pageY;
   cardTop.value = element.value.getBoundingClientRect().top;
   cardLeft.value = element.value.getBoundingClientRect().left;
-  e.target.style.position = "absolute";
+  cardHeight.value = element.value.getBoundingClientRect().height;
+  firstDrag.value = true;
+  // e.target.style.position = "absolute";
 };
 let mouseMove = (e) => {
   // マウス移動時
   if (dragging.value) {
-    let moveX = e.pageX - pageX.value + cardLeft.value;
-    let moveY = e.pageY - pageY.value + cardTop.value;
-    element.value.style.top = moveY + "px";
-    element.value.style.left = moveX + "px";
     if (firstDrag.value ) {
       placeHolder.value = document.createElement("div");
+      placeHolder.value.style.height = `${cardHeight.value}px`;
       placeHolder.value.classList.add("c-card--placeHolder");
       element.value.parentNode.insertBefore(placeHolder.value,element.value.nextSibling);
+      dragElement.value = element.value.cloneNode(true);
+      element.value.style.display = "none";
+      dragElement.value.style.position = "absolute";
+      drag.value.appendChild(dragElement.value)
+      dragElement.value.style.top = `${cardTop.value}px`;
+      dragElement.value.style.left = `${cardLeft.value}px`;
+      dragElement.value.classList.add("transform", "rotate-12")
       firstDrag.value = false
     }
+    let moveX = e.pageX - pageX.value + cardLeft.value;
+    let moveY = e.pageY - pageY.value + cardTop.value;
+    dragElement.value.style.top = moveY + "px";
+    dragElement.value.style.left = moveX + "px";
   }
 };
 let mouseUp = () => {
   // マウスを離した時
+  placeHolder.value.remove();
+  dragElement.value.remove();
+  element.value.style.display = "block";
   dragging.value = false;
   console.log("click mouseUp");
 };
