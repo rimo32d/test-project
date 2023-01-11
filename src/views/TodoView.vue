@@ -29,7 +29,7 @@
         :key="index"
         class="c-card"
         @mousedown="mousedown"
-        v-bind:draggable="false"
+        draggable="false"
       >
         <div class="c-card--inner">
           <div class="c-card--title">
@@ -123,7 +123,7 @@ let cardLeft = ref(0);
 let cardHeight = ref(0);
 
 let placeHolder = ref("");
-let dragElement = ref("");
+let draggingElement = ref("");
 let drag = ref("");
 
 let firstDrag = ref(true);
@@ -138,7 +138,6 @@ let mousedown = (e) => {
   cardLeft.value = element.value.getBoundingClientRect().left;
   cardHeight.value = element.value.getBoundingClientRect().height;
   firstDrag.value = true;
-  // e.target.style.position = "absolute";
 };
 let mouseMove = (e) => {
   // マウス移動時
@@ -148,25 +147,28 @@ let mouseMove = (e) => {
       placeHolder.value.style.height = `${cardHeight.value}px`;
       placeHolder.value.classList.add("c-card--placeHolder");
       element.value.parentNode.insertBefore(placeHolder.value,element.value.nextSibling);
-      dragElement.value = element.value.cloneNode(true);
+      // ドラッグ要素のクローンを作成
+      draggingElement.value = element.value.cloneNode(true);
+      // 元の位置にあった要素を非表示
       element.value.style.display = "none";
-      dragElement.value.style.position = "absolute";
-      drag.value.appendChild(dragElement.value)
-      dragElement.value.style.top = `${cardTop.value}px`;
-      dragElement.value.style.left = `${cardLeft.value}px`;
-      dragElement.value.classList.add("transform", "rotate-12")
+      draggingElement.value.style.position = "absolute";
+      drag.value.appendChild(draggingElement.value)
+      draggingElement.value.style.top = `${cardTop.value}px`;
+      draggingElement.value.style.left = `${cardLeft.value}px`;
+      // 要素を傾ける
+      draggingElement.value.classList.add("c-card--active")
       firstDrag.value = false
     }
     let moveX = e.pageX - pageX.value + cardLeft.value;
     let moveY = e.pageY - pageY.value + cardTop.value;
-    dragElement.value.style.top = moveY + "px";
-    dragElement.value.style.left = moveX + "px";
+    draggingElement.value.style.top = moveY + "px";
+    draggingElement.value.style.left = moveX + "px";
   }
 };
 let mouseUp = () => {
   // マウスを離した時
   placeHolder.value.remove();
-  dragElement.value.remove();
+  draggingElement.value.remove();
   element.value.style.display = "block";
   dragging.value = false;
   console.log("click mouseUp");

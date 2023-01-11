@@ -23,7 +23,10 @@
   &--placeHolder {
     min-width: 240px;
     min-height: 10px;
-    margin-bottom: 5px;
-    background-color: #AEAFAE;
+    border-radius: 5px;
+    background-color: #E0E2E6;
+  }
+  &--active {
+    transform: rotate(12deg);
   }
 }
