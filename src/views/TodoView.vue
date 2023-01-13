@@ -102,22 +102,32 @@ let mousedown = (e) => {
 let mouseMove = (e) => {
   // マウス移動時
   if (dragging.value) {
-    if (firstDrag.value ) {
+    if (firstDrag.value) {
       placeHolder.value = document.createElement("div");
       placeHolder.value.style.height = `${cardHeight.value}px`;
-      placeHolder.value.classList.add("c-card","c-card--placeHolder");
-      element.value.parentNode.insertBefore(placeHolder.value,element.value.nextSibling);
+      placeHolder.value.classList.add("c-card", "c-card--placeHolder");
+      element.value.parentNode.insertBefore(
+        placeHolder.value,
+        element.value.nextSibling
+      );
       // ドラッグ要素のクローンを作成
       draggingElement.value = element.value.cloneNode(true);
       // 元の位置にあった要素を非表示
       element.value.style.display = "none";
       draggingElement.value.style.position = "absolute";
-      drag.value.appendChild(draggingElement.value)
+      drag.value.appendChild(draggingElement.value);
       draggingElement.value.style.top = `${cardTop.value}px`;
       draggingElement.value.style.left = `${cardLeft.value}px`;
       // 要素を傾ける
-      draggingElement.value.classList.add("c-card--active")
-      firstDrag.value = false
+      draggingElement.value.classList.add("c-card--active");
+      // 他タスク情報を取得
+      const lists = document.querySelectorAll(".c-list");
+      console.log(lists);
+      lists.forEach(list => {
+        const sortable = [...list.querySelectorAll('.c-card')].filter(card => card.style.display != "none")
+        console.log(sortable);
+      })
+      firstDrag.value = false;
     }
     let moveX = e.pageX - pageX.value + cardLeft.value;
     let moveY = e.pageY - pageY.value + cardTop.value;
