@@ -39,6 +39,12 @@ let lists = ref([
         description: "コロナに影響による飲食店の倒産件数の調査",
         user_name: "鈴木",
       },
+      {
+        id: 2,
+        name: "仕様書の作成",
+        description: "webサイトの仕様書作成",
+        user_name: "鈴木",
+      },
     ],
   },
   {
@@ -99,7 +105,7 @@ let mouseMove = (e) => {
     if (firstDrag.value ) {
       placeHolder.value = document.createElement("div");
       placeHolder.value.style.height = `${cardHeight.value}px`;
-      placeHolder.value.classList.add("c-card--placeHolder");
+      placeHolder.value.classList.add("c-card","c-card--placeHolder");
       element.value.parentNode.insertBefore(placeHolder.value,element.value.nextSibling);
       // ドラッグ要素のクローンを作成
       draggingElement.value = element.value.cloneNode(true);
