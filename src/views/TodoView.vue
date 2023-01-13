@@ -1,26 +1,4 @@
 <template>
-  <!-- <div id="app">
-    <h2>ToDoリスト</h2>
-    <form @submit.prevent>
-      <div class="l-flex">
-        <div class="">名前</div>
-        <input type="text" v-model="todoText" />
-      </div>
-      <TheButton @click="addItem()" text="追加" />
-    </form>
-    <ul>
-      <li v-for="(todo, index) in todoList" :key="todo">
-        <input type="checkbox" v-model="todo.isDone" />
-        <span v-bind:class="{ done: todo.isDone }">
-          {{ todo.item }}
-        </span>
-        <TheButton @onClick="editText(index)" text="編集" />
-
-        <input type="text" v-if="todo.isOpen" v-model="todo.item" />
-        <TheButton @onClick="deleteButton(index)" text="削除" />
-      </li>
-    </ul>
-  </div> -->
   <div id="trello" class="l-flex" style="align-items: flex-start">
     <div v-for="(list, index) in lists" :key="index" class="c-list">
       <div class="c-list--title">{{ list.name }}</div>
@@ -29,7 +7,7 @@
         :key="index"
         class="c-card"
         @mousedown="mousedown"
-        v-bind:draggable="false"
+        draggable="false"
       >
         <div class="c-card--inner">
           <div class="c-card--title">
@@ -50,30 +28,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-// import TheButton from "../components/TheButton.vue";
-// const todoList = ref([]);
-// const todoText = ref("");
-// const addItem = () => {
-//   if (todoText.value === "") return;
-//   let todo = {
-//     item: todoText.value,
-//     isDone: false,
-//     isOpen: false,
-//   };
-//   todoList.value.push(todo);
-//   todoText.value = "";
-// };
-// let deleteButton = (index) => {
-//   todoList.value.splice(index, 1);
-// };
-// let editText = (index) => {
-//   let editFrag = todoList.value[index].isOpen;
-//   if (editFrag) {
-//     todoList.value[index].isOpen = false;
-//   } else {
-//     todoList.value[index].isOpen = true;
-//   }
-// };
 let lists = ref([
   {
     id: 1,
@@ -83,6 +37,12 @@ let lists = ref([
         id: 1,
         name: "レポートの作成",
         description: "コロナに影響による飲食店の倒産件数の調査",
+        user_name: "鈴木",
+      },
+      {
+        id: 2,
+        name: "仕様書の作成",
+        description: "webサイトの仕様書作成",
         user_name: "鈴木",
       },
     ],
@@ -123,7 +83,7 @@ let cardLeft = ref(0);
 let cardHeight = ref(0);
 
 let placeHolder = ref("");
-let dragElement = ref("");
+let draggingElement = ref("");
 let drag = ref("");
 
 let firstDrag = ref(true);
@@ -138,35 +98,47 @@ let mousedown = (e) => {
   cardLeft.value = element.value.getBoundingClientRect().left;
   cardHeight.value = element.value.getBoundingClientRect().height;
   firstDrag.value = true;
-  // e.target.style.position = "absolute";
 };
 let mouseMove = (e) => {
   // マウス移動時
   if (dragging.value) {
-    if (firstDrag.value ) {
+    if (firstDrag.value) {
       placeHolder.value = document.createElement("div");
       placeHolder.value.style.height = `${cardHeight.value}px`;
-      placeHolder.value.classList.add("c-card--placeHolder");
-      element.value.parentNode.insertBefore(placeHolder.value,element.value.nextSibling);
-      dragElement.value = element.value.cloneNode(true);
+      placeHolder.value.classList.add("c-card", "c-card--placeHolder");
+      element.value.parentNode.insertBefore(
+        placeHolder.value,
+        element.value.nextSibling
+      );
+      // ドラッグ要素のクローンを作成
+      draggingElement.value = element.value.cloneNode(true);
+      // 元の位置にあった要素を非表示
       element.value.style.display = "none";
-      dragElement.value.style.position = "absolute";
-      drag.value.appendChild(dragElement.value)
-      dragElement.value.style.top = `${cardTop.value}px`;
-      dragElement.value.style.left = `${cardLeft.value}px`;
-      dragElement.value.classList.add("transform", "rotate-12")
-      firstDrag.value = false
+      draggingElement.value.style.position = "absolute";
+      drag.value.appendChild(draggingElement.value);
+      draggingElement.value.style.top = `${cardTop.value}px`;
+      draggingElement.value.style.left = `${cardLeft.value}px`;
+      // 要素を傾ける
+      draggingElement.value.classList.add("c-card--active");
+      // 他タスク情報を取得
+      const lists = document.querySelectorAll(".c-list");
+      console.log(lists);
+      lists.forEach(list => {
+        const sortable = [...list.querySelectorAll('.c-card')].filter(card => card.style.display != "none")
+        console.log(sortable);
+      })
+      firstDrag.value = false;
     }
     let moveX = e.pageX - pageX.value + cardLeft.value;
     let moveY = e.pageY - pageY.value + cardTop.value;
-    dragElement.value.style.top = moveY + "px";
-    dragElement.value.style.left = moveX + "px";
+    draggingElement.value.style.top = moveY + "px";
+    draggingElement.value.style.left = moveX + "px";
   }
 };
 let mouseUp = () => {
   // マウスを離した時
   placeHolder.value.remove();
-  dragElement.value.remove();
+  draggingElement.value.remove();
   element.value.style.display = "block";
   dragging.value = false;
   console.log("click mouseUp");
