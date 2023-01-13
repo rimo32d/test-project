@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header class="l-header">
     <nav>
       <a href="/">Home</a> | <a href="/parts">parts</a> |
       <a href="/about">about</a> |
