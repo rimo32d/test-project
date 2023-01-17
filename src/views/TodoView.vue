@@ -45,32 +45,38 @@ let lists = ref([
         description: "webサイトの仕様書作成",
         user_name: "鈴木",
       },
-    ],
-  },
-  {
-    id: 2,
-    name: "作業中",
-    cards: [
       {
-        id: 4,
-        name: "見積もりの作成",
-        description: "",
-        user_name: "山田",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "完了",
-    cards: [
-      {
-        id: 5,
-        name: "B社への支払い",
-        description: "経理への連絡を忘れないように",
+        id: 3,
+        name: "仕様書の作成2",
+        description: "webサイトの仕様書作成",
         user_name: "鈴木",
       },
     ],
   },
+  // {
+  //   id: 2,
+  //   name: "作業中",
+  //   cards: [
+  //     {
+  //       id: 4,
+  //       name: "見積もりの作成",
+  //       description: "",
+  //       user_name: "山田",
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: 3,
+  //   name: "完了",
+  //   cards: [
+  //     {
+  //       id: 5,
+  //       name: "B社への支払い",
+  //       description: "経理への連絡を忘れないように",
+  //       user_name: "鈴木",
+  //     },
+  //   ],
+  // },
 ]);
 
 let element = ref("");
@@ -125,7 +131,37 @@ let mouseMove = (e) => {
       console.log(lists);
       lists.forEach(list => {
         const sortable = [...list.querySelectorAll('.c-card')].filter(card => card.style.display != "none")
-        console.log(sortable);
+        // sortable.forEach(card => {
+        //   const taskBox = card.getBoundingClientRect()
+        //   const offsetY = e.pageY - (taskBox.top + taskBox.height / 2)
+        //   console.log(offsetY,card)
+        // })
+        const belowElement = sortable.reduce((closestElement,sortable) => {
+          const taskElementBox = sortable.getBoundingClientRect()
+          const offsetY = e.pageY - (taskElementBox.top + taskElementBox.height / 2)
+          if (offsetY < 0 && offsetY > closestElement.offsetY) {
+            return {
+              offsetY: offsetY,
+              element: sortable
+            }
+          } else {
+            return closestElement;
+          }
+        }, { offsetY: Number.NEGATIVE_INFINITY }).element
+        console.log(belowElement)
+        placeHolder.value.remove()
+        placeHolder.value = document.createElement("div");
+        placeHolder.value.style.height = `${cardHeight.value}px`;
+        placeHolder.value.classList.add("c-card", "c-card--placeHolder");
+        // placeHolder.value.style.height = `${15}px`
+        // placeHolder.value.classList.add("mb-3", "p-2", "bg-gray-300");
+        // if (belowElement == undefined) {
+        //   console.log("一番下")
+        //   list.children[1].appendChild(placeHolder.value)
+        // } else {
+        //   console.log("一番下ではない")
+        //   list.children[1].insertBefore(placeHolder.value, belowElement)
+        // }
       })
       firstDrag.value = false;
     }
