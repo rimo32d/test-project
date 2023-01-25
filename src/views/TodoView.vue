@@ -1,6 +1,11 @@
 <template>
   <div id="trello" class="l-flex" style="align-items: flex-start">
-    <div v-for="(list, index) in lists" :key="index" class="c-list">
+    <div 
+      v-for="(list, index) in lists"
+      :key="index" 
+      class="c-list"
+      :data-list-id="list.id"
+    >
       <div class="c-list--title">{{ list.name }}</div>
       <div
         v-for="(card, index) in list.cards"
@@ -8,6 +13,7 @@
         class="c-card sortable"
         @mousedown="mousedown"
         draggable="false"
+        :data-card-id="card.id"
       >
         <div class="c-card--inner">
           <div class="c-card--title">
