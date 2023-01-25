@@ -5,7 +5,7 @@
       <div
         v-for="(card, index) in list.cards"
         :key="index"
-        class="c-card"
+        class="c-card sortable"
         @mousedown="mousedown"
         draggable="false"
       >
@@ -106,6 +106,7 @@ let mousedown = (e) => {
   firstDrag.value = true;
 };
 let mouseMove = (e) => {
+  console.log(e.pageY)
   // マウス移動時
   if (dragging.value) {
     if (firstDrag.value) {
@@ -126,45 +127,36 @@ let mouseMove = (e) => {
       draggingElement.value.style.left = `${cardLeft.value}px`;
       // 要素を傾ける
       draggingElement.value.classList.add("c-card--active");
-      // 他タスク情報を取得
-      const lists = document.querySelectorAll(".c-list");
-      console.log(lists);
-      lists.forEach(list => {
-        const sortable = [...list.querySelectorAll('.c-card')].filter(card => card.style.display != "none")
-        // sortable.forEach(card => {
-        //   const taskBox = card.getBoundingClientRect()
-        //   const offsetY = e.pageY - (taskBox.top + taskBox.height / 2)
-        //   console.log(offsetY,card)
-        // })
-        const belowElement = sortable.reduce((closestElement,sortable) => {
-          const taskElementBox = sortable.getBoundingClientRect()
-          const offsetY = e.pageY - (taskElementBox.top + taskElementBox.height / 2)
-          if (offsetY < 0 && offsetY > closestElement.offsetY) {
-            return {
-              offsetY: offsetY,
-              element: sortable
-            }
-          } else {
-            return closestElement;
-          }
-        }, { offsetY: Number.NEGATIVE_INFINITY }).element
-        console.log(belowElement)
-        placeHolder.value.remove()
-        placeHolder.value = document.createElement("div");
-        placeHolder.value.style.height = `${cardHeight.value}px`;
-        placeHolder.value.classList.add("c-card", "c-card--placeHolder");
-        // placeHolder.value.style.height = `${15}px`
-        // placeHolder.value.classList.add("mb-3", "p-2", "bg-gray-300");
-        // if (belowElement == undefined) {
-        //   console.log("一番下")
-        //   list.children[1].appendChild(placeHolder.value)
-        // } else {
-        //   console.log("一番下ではない")
-        //   list.children[1].insertBefore(placeHolder.value, belowElement)
-        // }
-      })
       firstDrag.value = false;
     }
+    // 他タスク情報を取得
+    const lists = document.querySelectorAll(".c-list");
+    lists.forEach(list => {
+      const sortables = [...list.querySelectorAll('.sortable')].filter(card => card.style.display != "none")
+      const belowElement = sortables.reduce((closestElement, sortable) => {
+        const taskElementBox = sortable.getBoundingClientRect()
+        const offsetY = e.pageY - (taskElementBox.top + taskElementBox.height / 2);
+        console.log(offsetY)
+        console.log(closestElement.offsetY)
+        if(offsetY < 0 && offsetY > closestElement.offsetY) {
+          return {
+            offsetY: offsetY,
+            element: sortable,
+          }
+        } else {
+          return closestElement;
+        }
+      }, { offsetY: Number.NEGATIVE_INFINITY}).element
+      placeHolder.value.remove();
+      placeHolder.value = document.createElement("div");
+      placeHolder.value.style.height = `${cardHeight.value}px`
+      placeHolder.value.classList.add("c-card", "c-card--placeHolder");
+      if (belowElement == undefined) {
+        list.appendChild(placeHolder.value)
+      } else {
+        list.insertBefore(placeHolder.value, belowElement)
+      }
+    })
     let moveX = e.pageX - pageX.value + cardLeft.value;
     let moveY = e.pageY - pageY.value + cardTop.value;
     draggingElement.value.style.top = moveY + "px";
@@ -177,7 +169,7 @@ let mouseUp = () => {
   draggingElement.value.remove();
   element.value.style.display = "block";
   dragging.value = false;
-  console.log("click mouseUp");
+  // console.log("click mouseUp");
 };
 
 onMounted(() => {
