@@ -1,13 +1,19 @@
 <template>
   <div id="trello" class="l-flex" style="align-items: flex-start">
-    <div v-for="(list, index) in lists" :key="index" class="c-list">
+    <div 
+      v-for="(list, index) in lists"
+      :key="index" 
+      class="c-list"
+      :data-list-id="list.id"
+    >
       <div class="c-list--title">{{ list.name }}</div>
       <div
         v-for="(card, index) in list.cards"
         :key="index"
-        class="c-card"
+        class="c-card sortable"
         @mousedown="mousedown"
         draggable="false"
+        :data-card-id="card.id"
       >
         <div class="c-card--inner">
           <div class="c-card--title">
@@ -45,32 +51,38 @@ let lists = ref([
         description: "webサイトの仕様書作成",
         user_name: "鈴木",
       },
-    ],
-  },
-  {
-    id: 2,
-    name: "作業中",
-    cards: [
       {
-        id: 4,
-        name: "見積もりの作成",
-        description: "",
-        user_name: "山田",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "完了",
-    cards: [
-      {
-        id: 5,
-        name: "B社への支払い",
-        description: "経理への連絡を忘れないように",
+        id: 3,
+        name: "仕様書の作成2",
+        description: "webサイトの仕様書作成",
         user_name: "鈴木",
       },
     ],
   },
+  // {
+  //   id: 2,
+  //   name: "作業中",
+  //   cards: [
+  //     {
+  //       id: 4,
+  //       name: "見積もりの作成",
+  //       description: "",
+  //       user_name: "山田",
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: 3,
+  //   name: "完了",
+  //   cards: [
+  //     {
+  //       id: 5,
+  //       name: "B社への支払い",
+  //       description: "経理への連絡を忘れないように",
+  //       user_name: "鈴木",
+  //     },
+  //   ],
+  // },
 ]);
 
 let element = ref("");
@@ -100,6 +112,7 @@ let mousedown = (e) => {
   firstDrag.value = true;
 };
 let mouseMove = (e) => {
+  console.log(e.pageY)
   // マウス移動時
   if (dragging.value) {
     if (firstDrag.value) {
@@ -120,15 +133,36 @@ let mouseMove = (e) => {
       draggingElement.value.style.left = `${cardLeft.value}px`;
       // 要素を傾ける
       draggingElement.value.classList.add("c-card--active");
-      // 他タスク情報を取得
-      const lists = document.querySelectorAll(".c-list");
-      console.log(lists);
-      lists.forEach(list => {
-        const sortable = [...list.querySelectorAll('.c-card')].filter(card => card.style.display != "none")
-        console.log(sortable);
-      })
       firstDrag.value = false;
     }
+    // 他タスク情報を取得
+    const lists = document.querySelectorAll(".c-list");
+    lists.forEach(list => {
+      const sortables = [...list.querySelectorAll('.sortable')].filter(card => card.style.display != "none")
+      const belowElement = sortables.reduce((closestElement, sortable) => {
+        const taskElementBox = sortable.getBoundingClientRect()
+        const offsetY = e.pageY - (taskElementBox.top + taskElementBox.height / 2);
+        console.log(offsetY)
+        console.log(closestElement.offsetY)
+        if(offsetY < 0 && offsetY > closestElement.offsetY) {
+          return {
+            offsetY: offsetY,
+            element: sortable,
+          }
+        } else {
+          return closestElement;
+        }
+      }, { offsetY: Number.NEGATIVE_INFINITY}).element
+      placeHolder.value.remove();
+      placeHolder.value = document.createElement("div");
+      placeHolder.value.style.height = `${cardHeight.value}px`
+      placeHolder.value.classList.add("c-card", "c-card--placeHolder");
+      if (belowElement == undefined) {
+        list.appendChild(placeHolder.value)
+      } else {
+        list.insertBefore(placeHolder.value, belowElement)
+      }
+    })
     let moveX = e.pageX - pageX.value + cardLeft.value;
     let moveY = e.pageY - pageY.value + cardTop.value;
     draggingElement.value.style.top = moveY + "px";
@@ -141,7 +175,7 @@ let mouseUp = () => {
   draggingElement.value.remove();
   element.value.style.display = "block";
   dragging.value = false;
-  console.log("click mouseUp");
+  // console.log("click mouseUp");
 };
 
 onMounted(() => {
